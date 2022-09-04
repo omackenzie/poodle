@@ -142,7 +142,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'registration.User'
 
 # Bleach settings
-BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong', 'a', 'img']
+BLEACH_ALLOWED_TAGS = ['p', 'b', 'i', 'u', 'em', 'strong', 'a', 'img', 'ul', 'ol', 'li', 'br']
 
 # Which HTML attributes are allowed
 BLEACH_ALLOWED_ATTRIBUTES = ['href', 'title', 'style', 'src']

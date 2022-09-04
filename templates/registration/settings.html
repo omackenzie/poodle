@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="mx-auto my-4" style="width: 600px">
+    <div class="text-center">
+      <img class="rounded-circle" style="height: 150px" src="https://i.pinimg.com/474x/ec/e2/b0/ece2b0f541d47e4078aef33ffd22777e.jpg" />
+      <h2 class="fw-bold mt-2">{{ user.get_full_name }}</h2>
+      <!-- Displays the type of user (admin, teacher or student)-->
+      <h6>
+        {% if user.is_superuser %}
+          Administrator
+        {% elif user.is_teacher %}
+          Teacher
+        {% else %}
+          Student
+        {% endif %}
+      </h6>
+      
+      <a class="btn btn-primary mt-3" href="{% url 'change_password' %}" type="button"><i class="fa-solid fa-key me-2"></i>Change Password</a>
+    </div>
+    <div>
+      {% if user.is_teacher %}
+        <h5 class="fw-bold mt-5 mb-2">Teacher Of:</h5>
+        <ul>
+          <!-- Show all the classes the user teaches -->
+          {% for class in user.teaching_classes.all %}
+            <li>{{ class.name }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        {% if user.classes.all %}
+          <h5 class="fw-bold mt-5 mb-2">Enrolled Classes:</h5>
+          <ul>
+            <!-- If the user is a student, show all the classes they are enroleld in -->
+            {% for class in user.classes.all %}
+              <li>{{ class.name }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <h5 class="fw-bold mt-5">Not enrolled in any classes.</h5>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+{% endblock content %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mx-auto">
+    {% if not assignments %}
+      <h5 class="text-center py-4">There are no assignments yet.</h5>
+    {% else %}
+      <div class="d-flex justify-content-center align-items-center">
+        <h2 class="py-4 me-2">Your Assignments</h2>
+        <div class="dropdown ms-2">
+          <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            Sort By
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <li><a class="dropdown-item" href="{% url 'home' %}?sort_by=due_date">Due Date</a></li>
+            <li><a class="dropdown-item" href="{% url 'home' %}?sort_by=name">Title</a></li>
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="row row-cols-2 row-cols-md-4 g-4 justify-content-center">
+      <!-- Render each assignment in a for loop -->
+      {% for assignment in assignments|dictsort:sort_by %}
+        <a class="col text-decoration-none" href="{% url 'details' assignment.id %}">
+          <div class="card h-100">
+            <img style="height: 150px; object-fit: cover;" class="card-img-top" src="{{ assignment.assigned_class.graphic.url }}" />
+            <div class="card-body">
+              <h5 class="card-title text-black fw-bold">{{ assignment.name }}</h5>
+              <p class="card-text text-black">{{ assignment.assigned_class.name }}</p>
+            </div>
+            <div class="card-footer">
+              <!-- Renders the due date of the assignment in a formatted form -->
+              <p class="card-text"><small class="text-muted">Due {{ assignment.due_date|date:'M d, Y, g:i A' }} ({{ assignment.time_remaining }})</small></p>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  <!-- If the user is a teacher, display the "add assignment" button -->
+  {% if user.is_teacher %}
+    <div class="text-center">
+      <a class="btn btn-primary btn-lg mt-5" href="{% url 'create_assignment' %}">Create a New Assignment</a>
+    </div>
+  {% endif %}
+{% endblock content %}

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="py-4 mx-auto" style="width: 700px;">
+    <!-- Students -->
+    <h2 class="text-center fw-bold">Help for Students</h2>
+    <div class="mt-4">
+      <h4 class="fw-bold">Viewing Your Assignments</h4>
+      <p>
+        If you are not signed in already, click 'Log In', in the top right of the page.
+        <br />
+        Then, enter your username and password given by your teacher.
+      </p>
+      <p>
+        You will then be taken to the home page, where you can view your assignments (if you have any).
+      </p>
+      {% load static %}
+      <img class="w-75" style="margin-left: 12.5%;" src="{% static 'img/help_images/home.PNG' %}" />
+      <p>On this page, you can see the name, the class and the due date of each assignment. Click on an assignment to view further details.</p>
+    </div>
+
+    <div class="mt-4">
+      <h4 class="fw-bold">Submitting Files</h4>
+      <p>On the details page, each section of the assignment has a field to upload your files.
+        <br />
+        Click the browse button and select all the files you wish to upload.
+        <br />
+        When you are done, press the upload button at the very bottom of the page.
+      </p>
+      <p>If you wish to delete any of the files you uploaded, a red trash can button can be clicked next to each file.</p>
+      <p class="fw-bold">NOTE: If your submission contains, multiple folders, please upload it as a zip file.</p>
+      {% load static %}
+      <img class="w-75" style="margin-left: 12.5%;" src="{% static 'img/help_images/delete.PNG' %}" />
+    </div>
+
+    <!-- Teachers -->
+    <h2 class="text-center fw-bold mt-4">Help for Teachers</h2>
+    <div class="mt-4">
+      <h4 class="fw-bold">Creating an Assignment</h4>
+      <p>
+        If you are not signed in already, click 'Log In', in the top right of the page.
+        <br />
+        Then, enter your username and password given by your administrator.
+      </p>
+      <p>
+        You will then be taken to the home page, where you can view any assignments you have assigned and a create button at the bottom. Press this go to the assignment creation page.
+      </p>
+      {% load static %}
+      <img class="w-75" style="margin-left: 12.5%;" src="{% static 'img/help_images/teacher_home.PNG' %}" />
+      <p>
+        Enter all the required fields, including:
+      </p>
+      <ul>
+        <li>The name of the assignment</li>
+        <li>The date and time the assignment is due</li>
+        <li>Which class you wish to give the assignment to</li>
+        <li>The details for the assignment. This box is a "rich text" editor, so you can include features from word processors such as bold/italic text and dot points</li>
+      </ul>
+      <p>Then, click submit at the bottom.</p>
+      {% load static %}
+      <img class="w-75" style="margin-left: 12.5%;" src="{% static 'img/help_images/create_form.PNG' %}" />
+    </div>
+
+    <div class="mt-4">
+      <h4 class="fw-bold">Adding Sections</h4>
+      <p>
+        After you have created an assignment, you will be taken to the details page where there is a button at the bottom to add a new section.
+        <br />
+        When this button is clicked, a form is added at the bottom with the required fields to add a new section. This functions similarly to the "create assignment" form.
+      </p>
+      {% load static %}
+      <img class="w-75" style="margin-left: 12.5%;" src="{% static 'img/help_images/add_section.PNG' %}" />
+      <p>
+        After filling out this form, you can press the create button to add the section to the assignment. If you don't want to add it, press the delete button.
+      </p>
+      <p>If you wish to edit or delete a section after it has been added, a green edit button and a red delete button are avaiable next to each section to achieve this.</p>
+    </div>
+
+    <div class="mt-4">
+      <h4 class="fw-bold">Viewing Submissions</h4>
+      <p>At the top of each assignment details page, a "submissions" button can be clicked to view your students' submissions.</p>
+      {% load static %}
+      <img class="w-75" style="margin-left: 12.5%;" src="{% static 'img/help_images/submissions.PNG' %}" />
+      <p>Click on a different student name on the left to see their submission.</p>
+    </div>
+  </div>
+{% endblock content %}

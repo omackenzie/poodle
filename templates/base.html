@@ -1,0 +1,68 @@
+<!-- The base page is included as a part of all other classes -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poodle</title>
+
+    <!-- Bootstrap and FontAwesome imports -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+
+    <script src="https://kit.fontawesome.com/c0b775d8f9.js" crossorigin="anonymous"></script>
+
+    <!-- Block which can be included in other files for head content -->
+    {% block head %}
+    {% endblock head %}
+  </head>
+  <body style="overflow-x: hidden;">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-2 px-4">
+      {% load static %}
+      <a class="navbar-brand" href="{% url 'home' %}"><img style="height: 60px;" src="{% static 'img/logo.png' %}" /></a>
+
+      <div class="collapse navbar-collapse">
+        <div class="navbar-nav ms-auto">
+          {% if user.is_authenticated %}
+            <div class="nav-item">
+              <div class="dropdown bg-dark me-4">
+                <!-- Toggle for the dropdown -->
+                <a class="btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                  <img class="rounded-circle" style="height: 40px;" src="https://i.pinimg.com/474x/ec/e2/b0/ece2b0f541d47e4078aef33ffd22777e.jpg" />
+                  <span class="text-white ps-2">{{ user.get_username }}</span>
+                </a>
+              
+                <!-- Dropdown links -->
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                  <!-- Show option for admin panel if the user is an administrator-->
+                  {% if user.is_superuser %}
+                    <li><a class="dropdown-item" href="/admin"><i class="fa-solid fa-screwdriver-wrench me-2"></i>Admin Panel</a></li>
+                  {% endif %}
+                  <li><a class="dropdown-item" href="{% url 'settings' %}"><i class="fa-solid fa-gear me-2"></i>Settings</a></li>
+                  <li><a class="dropdown-item" href="{% url 'help' %}"><i class="fa-solid fa-circle-info me-2"></i>Help</a></li>
+                  <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket me-2"></i>Log Out</a></li>
+                </ul>
+              </div>
+            </div>
+          <!-- Show login and help nav items if the user isn't authenticated -->
+          {% else %}
+            <div class="nav-item">
+              <a class="nav-link" href="{% url 'help' %}">Help</a>
+            </div>
+            <div class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}">Log In</a>
+            </div>
+          {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Block which can be included in other files for the page content -->
+    {% block content %}
+    {% endblock content %}
+  </body>
+</html>

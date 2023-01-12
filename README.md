@@ -20,6 +20,9 @@ An assignment submission system created with Django. This project was made for m
  - You can then go back to the main page and sign in using the teacher or student accounts you created
  - A tutorial on the features of the site is available by clicking your profile in the top right and clicking help in the dropdown
 
+## TODO
+ - Add additional unit tests and achieve 100% code coverage
+
 ## Screenshots
 ![Home](https://user-images.githubusercontent.com/30273552/188298163-8958436e-68ae-46dc-9f7b-439ba2d786f5.PNG)
 ![Assignment](https://user-images.githubusercontent.com/30273552/188298375-56d00f29-4e25-45e8-a793-270dec06efc5.PNG)

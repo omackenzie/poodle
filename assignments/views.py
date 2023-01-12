@@ -37,6 +37,7 @@ def home(request):
 @login_required
 def details(request, id):
     # Renders the details of the assignment after it's clicked
+
     assignment = get_object_or_404(Assignment, pk=id)
         
     # If the user is the class teacher, include the form to add a section
@@ -134,6 +135,7 @@ def download(request, submission_id):
 
 class DeleteFileView(DeleteView):
     # Django class-based view for deleting a submission
+
     model = Submission
     
     def get_context_data(self, **kwargs):
@@ -151,6 +153,7 @@ class DeleteFileView(DeleteView):
 
 class DeleteSectionView(DeleteView):
     # Django class-based view for deleting a section
+
     model = Section
 
     def get_context_data(self, **kwargs):
@@ -168,6 +171,7 @@ class DeleteSectionView(DeleteView):
 
 class DeleteAssignmentView(AccessMixin, DeleteView):
     # Django class-based for deleting an assignment
+
     model = Assignment
     success_url = '/'
 

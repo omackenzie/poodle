@@ -1,14 +1,16 @@
-from django.views.generic.edit import DeleteView
-from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import AccessMixin
 from django.core.exceptions import PermissionDenied
+from django.core.files.storage import FileSystemStorage
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.core.files.storage import FileSystemStorage
+from django.views.decorators.http import require_http_methods
+from django.views.generic.edit import DeleteView
+
 from registration.models import Class, User
-from .models import Assignment, Section, Submission
+
 from .forms import AssignmentCreationForm, SectionCreationForm
+from .models import Assignment, Section, Submission
 
 
 @login_required

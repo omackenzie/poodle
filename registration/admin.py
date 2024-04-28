@@ -1,8 +1,8 @@
 from django.contrib import admin
-from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
-from .models import Class, User
+from django.contrib.auth.models import Group
 
+from .models import Class, User
 
 # Adds the "is teacher" field to the form to add a new user
 ADDITIONAL_USER_FIELDS = (

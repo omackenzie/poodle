@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Assignment, Section, Submission
 
+from .models import Assignment, Section, Submission
 
 # Register the models to the admin panel
 admin.site.register(Assignment)

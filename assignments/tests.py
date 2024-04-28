@@ -1,7 +1,10 @@
 import os
-from django.test import TestCase
+
 from django.core.files import File
-from registration.models import User, Class
+from django.test import TestCase
+
+from registration.models import Class, User
+
 from .models import Assignment, Section, Submission
 
 

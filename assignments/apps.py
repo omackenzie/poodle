@@ -6,4 +6,5 @@ class AssignmentsConfig(AppConfig):
     name = 'assignments'
 
     def ready(self):
-        from .signals import delete_submission
+        # Import signals to ensure signal handling setup
+        from .signals import delete_submission  # noqa: F401

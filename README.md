@@ -20,6 +20,12 @@ An assignment submission system created with Django. This project was made for m
  - You can then go back to the main page and sign in using the teacher or student accounts you created
  - A tutorial on the features of the site is available by clicking your profile in the top right and clicking help in the dropdown
 
+## Testing and linting
+ - To run tests, execute `python manage.py test`
+ - To install the necessary tools for linting, run `pip install -r dev-requirements.txt`
+ - Linting uses ruff, `ruff check .`
+ - Import ordering is done with isort, `isort .`
+
 ## TODO
  - Add additional unit tests and achieve 100% code coverage
 

@@ -1,6 +1,8 @@
-from django.forms import ModelForm, ModelChoiceField
+from django.forms import ModelChoiceField, ModelForm
+
 from registration.models import Class
-from .models import Submission, Assignment, Section
+
+from .models import Assignment, Section, Submission
 
 
 class SubmissionForm(ModelForm):

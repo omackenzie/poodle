@@ -1,6 +1,8 @@
-from datetime import datetime
 import os
+from datetime import datetime
+
 from django.db import models
+
 from registration.models import Class, User
 
 

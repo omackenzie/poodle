@@ -25,3 +25,9 @@ jobs:
       run: |
         coverage run manage.py test
         coverage report -m
+    - name: Run isort
+      run: |
+        isort --check-only --diff .
+    - name: Run ruff
+      run: |
+        ruff check .

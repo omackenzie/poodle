@@ -1,13 +1,16 @@
 from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import redirect, render
 
 
+@login_required
 def settings(request):
     # Renders the profile page
     return render(request, 'registration/settings.html')
 
 
+@login_required
 def change_password(request):
     # Changes the user's password at their request
 

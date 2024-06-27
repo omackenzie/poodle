@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import AccessMixin
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.core.files.storage import FileSystemStorage
 from django.http import FileResponse
@@ -9,7 +9,7 @@ from django.views.generic.edit import DeleteView
 
 from registration.models import Class, User
 
-from .forms import AssignmentCreationForm, SectionCreationForm
+from .forms import AssignmentCreationForm, SectionForm
 from .models import Assignment, Section, Submission
 
 
@@ -44,8 +44,17 @@ def details(request, id):
         
     # If the user is the class teacher, include the form to add a section
     if request.user == assignment.assigned_class.teacher:
-        section_form = SectionCreationForm()
-        return render(request, 'assignments/details.html', {'assignment': assignment, 'section_form': section_form})
+        add_section_form = SectionForm(prefix='add')
+        edit_section_form = SectionForm(prefix='edit')
+        return render(
+            request,
+            'assignments/details.html',
+            {
+                'assignment': assignment,
+                'add_section_form': add_section_form,
+                'edit_section_form': edit_section_form
+            }
+        )
     # Check that user is part of the class
     if request.user in assignment.assigned_class.users.all():
         return render(request, 'assignments/details.html', {'assignment': assignment})
@@ -54,7 +63,6 @@ def details(request, id):
         raise PermissionDenied()
 
 
-# Only allow POST requests for this view
 @require_http_methods(['POST'])
 @login_required
 def upload_files(request, id):
@@ -62,21 +70,22 @@ def upload_files(request, id):
 
     assignment = get_object_or_404(Assignment, pk=id)
 
-    # Check that user is part of the class
-    if request.user in assignment.assigned_class.users.all() or request.user.is_teacher:
-        # Goes through all the submitted files, creates the required objects and saves the files
-        fs = FileSystemStorage()
-        for i in range(len(assignment.section_set.all())):
-            if f'document{i}' in request.FILES:
-                for file in request.FILES.getlist(f'document{i}'):
-                    saved = fs.save(f'submissions/{file.name}', file)
-                    Submission.objects.create(document=saved, section=assignment.section_set.all()[i], user=request.user)
-    
+    # User must be part of the class
+    if request.user not in assignment.assigned_class.users.all():
+        raise PermissionDenied()
+
+    # Goes through all the submitted files, creates the required objects and saves the files
+    fs = FileSystemStorage()
+    for i in range(len(assignment.section_set.all())):
+        if f'document{i}' in request.FILES:
+            for file in request.FILES.getlist(f'document{i}'):
+                saved = fs.save(f'submissions/{file.name}', file)
+                Submission.objects.create(document=saved, section=assignment.section_set.all()[i], user=request.user)
+
     # Redirect back to the details page
     return redirect('details', id=assignment.pk)
 
 
-# Only allow POST requests for this view
 @require_http_methods(['POST'])
 @login_required
 def create_section(request, id):
@@ -89,8 +98,8 @@ def create_section(request, id):
         raise PermissionDenied()
     else:
         updated_request = request.POST.copy()
-        updated_request.update({'assignment': assignment.pk })
-        form = SectionCreationForm(updated_request)
+        updated_request.update({'add-assignment': assignment.pk })
+        form = SectionForm(updated_request, prefix='add')
         if form.is_valid():
             form.save()
             
@@ -98,22 +107,23 @@ def create_section(request, id):
         return redirect(f'/assignments/{assignment.pk}/details')
 
 
-# Only allow POST requests for this view
 @require_http_methods(['POST'])
 @login_required
 def edit_section(request):
     # Modifies a preexisting section
 
     section = get_object_or_404(Section, pk=request.POST['section_id'])
+    assignment = section.assignment
 
     # Deny access if the user isn't the class teacher
     if section.assignment.assigned_class.teacher != request.user:
         raise PermissionDenied()
     else:
-        section.title = request.POST['edit_title']
-        section.total_marks = request.POST['edit_total_marks']
-        section.details = request.POST['edit_details']
-        section.save()
+        updated_request = request.POST.copy()
+        updated_request.update({'edit-assignment': assignment.pk })
+        form = SectionForm(updated_request, instance=section, prefix='edit')
+        if form.is_valid():
+            form.save()
 
         # Return to the assignment details page when the section is changed
         return redirect(f'/assignments/{section.assignment.pk}/details')
@@ -135,16 +145,13 @@ def download(request, submission_id):
         raise PermissionDenied()
 
 
-class DeleteFileView(DeleteView):
-    # Django class-based view for deleting a submission
-
+class DeleteFileView(UserPassesTestMixin, DeleteView):
     model = Submission
-    
-    def get_context_data(self, **kwargs):
-        context = super(DeleteFileView, self).get_context_data(**kwargs)
-        # Pass 'next' parameter received from previous page to the context 
-        context['next_url'] = self.request.GET.get('next')
-        return context
+
+    def test_func(self):
+        obj = self.get_object()
+        # User must be the owner to delete it
+        return obj.user == self.request.user
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
@@ -153,16 +160,13 @@ class DeleteFileView(DeleteView):
         return '/'
 
 
-class DeleteSectionView(DeleteView):
-    # Django class-based view for deleting a section
-
+class DeleteSectionView(UserPassesTestMixin, DeleteView):
     model = Section
 
-    def get_context_data(self, **kwargs):
-        context = super(DeleteSectionView, self).get_context_data(**kwargs)
-        # Pass 'next' parameter received from previous page to the context 
-        context['next_url'] = self.request.GET.get('next')
-        return context
+    def test_func(self):
+        obj = self.get_object()
+        # User must be teacher of the class to delete the section
+        return obj.assignment.assigned_class.teacher == self.request.user       
 
     def get_success_url(self):
         next_url = self.request.GET.get('next')
@@ -171,22 +175,17 @@ class DeleteSectionView(DeleteView):
         return '/'
 
 
-class DeleteAssignmentView(AccessMixin, DeleteView):
-    # Django class-based for deleting an assignment
-
+class DeleteAssignmentView(UserPassesTestMixin, DeleteView):
     model = Assignment
     success_url = '/'
-
-    def dispatch(self, request, *args, **kwargs):
-        assignment = self.get_object()
-        if assignment.assigned_class.teacher != request.user:
-            raise PermissionDenied()
-        return super().dispatch(request, *args, **kwargs)
+    
+    def test_func(self):
+        obj = self.get_object()
+        # User must be teacher of the class to delete the assignment
+        return obj.assigned_class.teacher == self.request.user
 
 
 def create_assignment(request):
-    # Creates a new assignment
-
     if request.user.is_teacher:
         # For submission handling
         if request.method == 'POST':
@@ -209,7 +208,7 @@ def create_assignment(request):
 
 @login_required
 def view_submissions(request, id):
-    # View all submissions for that assignment
+    # View all submissions for a given assignment
 
     assignment = get_object_or_404(Assignment, pk=id)
 
@@ -218,19 +217,24 @@ def view_submissions(request, id):
         raise PermissionDenied()
     else:
         user_id = request.GET.get('user_id', assignment.assigned_class.users.all()[0].pk)
-        
+
         # Gets the submissions for each user
         user = get_object_or_404(User, pk=user_id)
-        user_submissions = []
-        for section in assignment.section_set.all():
-            for submission in section.submission_set.all():
-                if submission.user == user:
-                    user_submissions.append(submission)
+        sections = assignment.section_set.all()
+        user_submissions = Submission.objects.filter(
+            section__in=sections, user=user
+        )
 
-        return render(request, 'assignments/view_submissions.html', {'assignment': assignment, 'selected_student': user, 'user_submissions': user_submissions})
+        return render(
+            request,
+            'assignments/view_submissions.html',
+            {
+                'assignment': assignment,
+                'selected_student': user,
+                'user_submissions': user_submissions
+            }
+        )
 
 
 def help(request):
-    # Renders the help page
-    
     return render(request, 'assignments/help.html')

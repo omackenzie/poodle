@@ -1,14 +1,12 @@
 import os
-from datetime import datetime
 
 from django.db import models
+from django.utils import timezone
 
 from registration.models import Class, User
 
 
 class Assignment(models.Model):
-    # Assignment model
-
     name = models.CharField(max_length=50)
     details = models.TextField(blank=True, null=True)
     due_date = models.DateTimeField(blank=True, null=True)
@@ -18,14 +16,17 @@ class Assignment(models.Model):
     # Returns the time left until the assignment is due
     @property
     def time_remaining(self):
-        delta = datetime.date(self.due_date) - datetime.now().date()
+        if not self.due_date:
+            return 'no due date'
+
+        delta = self.due_date - timezone.now()
         if delta.days < 0:
             return 'overdue'
         elif delta.days == 0:
             return 'today'
         elif delta.days == 1:
             return 'in 1 day'
-        elif delta.days == 7:
+        elif 7 <= delta.days < 14:
             return 'in 1 week'
         elif delta.days >= 7:
             return f'in {delta.days // 7} weeks'
@@ -37,8 +38,6 @@ class Assignment(models.Model):
 
 
 class Section(models.Model):
-    # Section model
-
     title = models.CharField(max_length=100)
     total_marks = models.PositiveIntegerField()
     details = models.TextField(blank=True, null=True)
@@ -49,28 +48,30 @@ class Section(models.Model):
 
 
 class Submission(models.Model):
-    # Submission model
-
-    document = models.FileField(upload_to='submissions', blank=True, null=True)
+    document = models.FileField(upload_to='submissions')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    @property
+    def document_path(self):
+        return self.document.name
+
     # Returns the path of the submission file
     @property
-    def file_path(self):
-        return self.document.name.split('/')[-1]
+    def filename(self):
+        return os.path.basename(self.document_path)
 
     # Returns the type of icon that should be used depending on the extension
     @property
     def file_image(self):
-        _, extension = os.path.splitext(self.document.name)
+        _, extension = os.path.splitext(self.document_path)
         if extension == '.pdf':
             return 'file-pdf'
         elif extension in ['.png', '.jpg', '.gif', '.bmp']:
             return 'file-image'
         else:
             return 'file-lines'
-    
+
     def __str__(self):
-        return f'{self.section.assignment} - {self.file_path} ({self.user.first_name} {self.user.last_name})'
+        return f'{self.section.assignment} - {self.filename} ({self.user.first_name} {self.user.last_name})'

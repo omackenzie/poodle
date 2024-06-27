@@ -41,7 +41,7 @@
       {% for submission in user_submissions %}
         <div>
           <i class="fa-regular fa-{{ submission.file_image }}"></i>
-          <a class="fw-semibold text-decoration-none ps-1" href="{% url 'download' submission.pk %}" target="_blank">{{ submission.file_path }}</a>
+          <a class="fw-semibold text-decoration-none ps-1" href="{% url 'download' submission.pk %}" target="_blank">{{ submission.filename }}</a>
           <span>({{ submission.section.title }})</span>
       </div>
       {% endfor %}

@@ -1,2 +1,4 @@
 ruff
 isort
+django-dynamic-fixture
+coverage

@@ -1,0 +1,7 @@
+[run]
+  source = .
+  omit =
+    */migrations/*
+    manage.py
+    poodle/asgi.py
+    poodle/wsgi.py

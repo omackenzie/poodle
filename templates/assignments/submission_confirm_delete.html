@@ -6,7 +6,7 @@
   <div class="text-center pt-4">
     <form method="post">
       {% csrf_token %}
-      <p class="fs-5">Are you sure you want to delete {{ object.file_path }}?</p>
+      <p class="fs-5">Are you sure you want to delete {{ object.filename }}?</p>
       <input class="btn btn-primary" type="submit" value="Confirm">
     </form>
   </div>

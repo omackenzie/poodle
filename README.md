@@ -1,6 +1,8 @@
 # Poodle
 
-An assignment submission system created with Django. This project was made for my major SDD work.
+A learning management system created with Django.
+This project was made for my major SDD work, and later revised to add additional features
+and testing
 
 ## Setup
 1.  `git clone https://github.com/omackenzie/poodle`
@@ -22,12 +24,13 @@ An assignment submission system created with Django. This project was made for m
 
 ## Testing and linting
  - To run tests, execute `python manage.py test`
+ - To check coverage, execute `coverage run manage.py test`, then `coverage report -m`
  - To install the necessary tools for linting, run `pip install -r dev-requirements.txt`
  - Linting uses ruff, `ruff check .`
  - Import ordering is done with isort, `isort .`
 
 ## TODO
- - Add additional unit tests and achieve 100% code coverage
+ - Quizzes
 
 ## Screenshots
 ![Home](https://user-images.githubusercontent.com/30273552/188298163-8958436e-68ae-46dc-9f7b-439ba2d786f5.PNG)

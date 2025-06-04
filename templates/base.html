@@ -43,7 +43,14 @@
                   {% endif %}
                   <li><a class="dropdown-item" href="{% url 'settings' %}"><i class="fa-solid fa-gear me-2"></i>Settings</a></li>
                   <li><a class="dropdown-item" href="{% url 'help' %}"><i class="fa-solid fa-circle-info me-2"></i>Help</a></li>
-                  <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket me-2"></i>Log Out</a></li>
+                  <li>
+                    <form method="post" action="{% url 'logout' %}" class="d-inline">
+                      {% csrf_token %}
+                      <button type="submit" class="dropdown-item border-0 w-100 text-start">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i>Log Out
+                      </button>
+                    </form>
+                  </li>
                 </ul>
               </div>
             </div>

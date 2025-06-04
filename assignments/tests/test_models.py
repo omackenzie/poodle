@@ -1,8 +1,8 @@
+import datetime
 from unittest.mock import PropertyMock, patch
 
 from ddf import G
 from django.test import TestCase
-from django.utils import timezone
 
 from assignments.models import Assignment, Section, Submission
 from registration.models import User
@@ -13,7 +13,7 @@ class AssignmentTestCase(TestCase):
 
     def setUp(self):
         # Set up method to patch now for all tests.
-        self.mocked_now = timezone.datetime(2023, 2, 1, 11, 30, tzinfo=timezone.utc)
+        self.mocked_now = datetime.datetime(2023, 2, 1, 11, 30, tzinfo=datetime.timezone.utc)
         self.now_patcher = patch('assignments.models.timezone.now', return_value=self.mocked_now)
         self.now_patcher.start()
 
@@ -25,27 +25,27 @@ class AssignmentTestCase(TestCase):
         self.assertEqual(assignment.time_remaining, 'no due date')
     
     def test_time_remaining__overdue(self):
-        assignment = G(Assignment, due_date=timezone.datetime(2023, 2, 1, 11, 29, tzinfo=timezone.utc))
+        assignment = G(Assignment, due_date=datetime.datetime(2023, 2, 1, 11, 29, tzinfo=datetime.timezone.utc))
         self.assertEqual(assignment.time_remaining, 'overdue')
 
     def test_time_remaining__today(self):
-        assignment = G(Assignment, due_date=timezone.datetime(2023, 2, 1, 11, 31, tzinfo=timezone.utc))
+        assignment = G(Assignment, due_date=datetime.datetime(2023, 2, 1, 11, 31, tzinfo=datetime.timezone.utc))
         self.assertEqual(assignment.time_remaining, 'today')
 
     def test_time_remaining__in_1_day(self):
-        assignment = G(Assignment, due_date=timezone.datetime(2023, 2, 2, 13, 30, tzinfo=timezone.utc))
+        assignment = G(Assignment, due_date=datetime.datetime(2023, 2, 2, 13, 30, tzinfo=datetime.timezone.utc))
         self.assertEqual(assignment.time_remaining, 'in 1 day')
 
     def test_time_remaining__in_1_week(self):
-        assignment = G(Assignment, due_date=timezone.datetime(2023, 2, 10, 11, 30, tzinfo=timezone.utc))
+        assignment = G(Assignment, due_date=datetime.datetime(2023, 2, 10, 11, 30, tzinfo=datetime.timezone.utc))
         self.assertEqual(assignment.time_remaining, 'in 1 week')
 
     def test_time_remaining__over_1_week(self):
-        assignment = G(Assignment, due_date=timezone.datetime(2023, 3, 1, 11, 30, tzinfo=timezone.utc))
+        assignment = G(Assignment, due_date=datetime.datetime(2023, 3, 1, 11, 30, tzinfo=datetime.timezone.utc))
         self.assertEqual(assignment.time_remaining, 'in 4 weeks')
 
     def test_time_remaining__between_1_day_and_1_week(self):
-        assignment = G(Assignment, due_date=timezone.datetime(2023, 2, 5, 11, 30, tzinfo=timezone.utc))
+        assignment = G(Assignment, due_date=datetime.datetime(2023, 2, 5, 11, 30, tzinfo=datetime.timezone.utc))
         self.assertEqual(assignment.time_remaining, 'in 4 days')
 
 

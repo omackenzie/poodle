@@ -1,3 +1,4 @@
-Django==4.1
-django-bleach==3.0.0
-Pillow==9.2.0
+Django==5.2.1
+django-bleach==3.1.0
+pillow==10.4.0
+django-dynamic-fixture==4.0.1

@@ -1,0 +1,43 @@
+services:
+  web:
+    build: .
+    volumes:
+      - .:/app
+      - media_volume:/app/media
+    environment:
+      - DEBUG=True
+      - DB_NAME=poodle
+      - DB_USER=poodle_user
+      - DB_PASSWORD=poodle_password
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      db:
+        condition: service_healthy
+    # Override command for development
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py create_test_superuser &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  # Service for running tests without starting the full stack
+  test:
+    build: .
+    volumes:
+      - .:/app
+    environment:
+      - DB_NAME=poodle_test
+      - DB_USER=poodle_user
+      - DB_PASSWORD=poodle_password
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      db:
+        condition: service_healthy
+    command: python manage.py test
+    profiles:
+      - testing
+
+volumes:
+  media_volume:

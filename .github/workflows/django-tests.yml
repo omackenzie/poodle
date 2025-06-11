@@ -10,6 +10,28 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: poodle
+          POSTGRES_USER: poodle_user
+          POSTGRES_PASSWORD: poodle_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    env:
+      DB_NAME: poodle
+      DB_USER: poodle_user
+      DB_PASSWORD: poodle_password
+      DB_HOST: localhost
+      DB_PORT: 5432
+    
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python
@@ -21,6 +43,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r dev-requirements.txt
+    - name: Run migrations
+      run: |
+        python manage.py migrate
     - name: Run tests with coverage
       run: |
         coverage run manage.py test
